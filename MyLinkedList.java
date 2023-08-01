@@ -1,172 +1,91 @@
 package HW2;
 
-import java.util.NoSuchElementException;
+class Node {
+    // Значение ноды
+    int value;
+    // Следующая нода
+    Node next = null;
 
-public class MyLinkedList<E> {
-
-    private Node head; // головной/первый элемент списка
-    private int size; // размер списка
-
-    public MyLinkedList() {
-        head = null;
-        size = 0;
+    public Node(int value) {
+        this.value = value;
     }
+}
 
-    // вставка элемента в начало списка
-    public void addFirst(int value) {
-        head = new Node(value, head);
-        size++;
-    }
+class LinkedList {
+    // Первая нода в списке
+    Node head;
 
-    // вставка элемента в конец списка
-    public void addLast(int value) {
-        Node newNode = new Node(value, null);
-
+    // Метод добавления элемента
+    public void add(int value) {
+        // Если список пуст, создаем первую ноду
         if (head == null) {
-            head = newNode;
+            head = new Node(value);
         } else {
             Node current = head;
-
-            while (current.getNext() != null) {
-                current = current.getNext();
+            // Ищем последнюю ноду в списке
+            while (current.next != null) {
+                current = current.next;
             }
-
-            current.setNext(newNode);
-        }
-
-        size++;
-    }
-
-    // вставка элемента по указанному индексу
-    public void add(int value, int index) {
-        if (index < 0 || index > size)   {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-        }
-
-        if (index == 0) {
-            addFirst(value);
-        } else if (index == size) {
-            addLast(value);
-        } else {
-            Node current = head;
-
-            for (int i = 1; i < index; i++) {
-                current = current.getNext();
-            }
-
-            Node newNode = new Node(value, current.getNext());
-            current.setNext(newNode);
-            size++;
+            // Создаем новую ноду и привязываем ее к последней ноде в списке
+            current.next = new Node(value);
         }
     }
 
-    // удаление первого элемента из списка
-    public void removeFirst() {
-        if (head == null) {
-            throw new NoSuchElementException();
-        }
-
-        head = head.getNext();
-
-    }
-
-    // удаление последнего элемента из списка
-    public void removeLast() {
-        if (head == null) {
-            throw new NoSuchElementException();
-        }
-
-        if (head.getNext() == null) {
-            head = null;
-        } else {
-            Node current = head;
-
-            while (current.getNext().getNext() != null) {
-                current = current.getNext();
-            }
-
-            current.setNext(null);
-        }
-
-    }
-
-    // удаление элемента по указанному индексу
-    public void remove(int index) {
-        if (index < 0|| index >= size) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-        }
-
-        if (index == 0) {
-            removeFirst();
-        } else if (index == size - 1) {
-            removeLast();
-        } else {
-            Node current = head;
-
-            for (int i = 1; i < index; i++) {
-                current = current.getNext();
-            }
-
-            current.setNext(current.getNext().getNext());
-
-        }
-    }
-
-    // получение элемента по указанному индексу
+    // Метод получения элемента по индексу
     public int get(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-        }
-
         Node current = head;
-
-        for (int i = 0; i < index; i++) {
-            current = current.getNext();
-        }
-
-        return current.getValue();
-    }
-
-    // размер списка
-    public int size() {
-        return size;
-    }
-
-    // вывод всего списка на экран
-    public void printList() {
-        Node current = head;
-
+        int currentIndex = 0;
+        // Ищем ноду с нужным индексом
         while (current != null) {
-            System.out.print(current.getValue() + " ");
-            current = current.getNext();
+            if (currentIndex == index) {
+                return current.value;
+            }
+            current = current.next;
+            currentIndex++;
         }
-
-        System.out.println();
+        // Если индекс вне диапазона, выбрасываем исключение
+        throw new IndexOutOfBoundsException();
     }
 
-    private static class Node {
-        private int value;
-        private Node next;
-
-        public Node(int value, Node next) {
-            this.value = value;
-            this.next  = next;
+    // Метод удаления элемента по индексу
+    public void remove(int index) {
+        // Если удаляем первую ноду
+        if (index == 0) {
+            head = head.next;
+        } else {
+            Node current = head;
+            int currentIndex = 0;
+            // Ищем ноду перед удаляемой
+            while (current != null) {
+                if (currentIndex == index - 1) {
+                    // Переставляем указатель с предыдущей ноды на ноду после удаляемой
+                    // Таким образом, удаляем ноду из цепи списка
+                    current.next = current.next.next;
+                    return;
+                }
+                current = current.next;
+                currentIndex++;
+            }
+            // Если индекс вне диапазона, выбрасываем исключение
+            throw new IndexOutOfBoundsException();
         }
+    }
+}
 
-        public int getValue() {
-            return value;
-        }
+public class Main {
+    public static void main(String[] args) {
+        LinkedList linkedList = new LinkedList();
+        linkedList.add(5); // Добавляем элемент 5
+        linkedList.add(10); // Добавляем элемент 10
+        linkedList.add(15); // Добавляем элемент 15
 
-        public void setValue(int value) {
-            this.value = value;
-        }
+        System.out.println(linkedList.get(0)); // Выведет: 5
+        System.out.println(linkedList.get(1)); // Выведет: 10
+        System.out.println(linkedList.get(2)); // Выведет: 15
 
-        public Node getNext() {
-            return next;
-        }
+        linkedList.remove(1); // Удаляем элемент с индексом 1
 
-        public void setNext(Node next) {
-            this.next  = next;
-        }
+        System.out.println(linkedList.get(0)); // Выведет: 5
+        System.out.println(linkedList.get(1)); // Выведет: 15
     }
 }
